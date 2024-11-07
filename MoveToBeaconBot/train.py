@@ -2,70 +2,88 @@ import datetime
 import time
 import torch
 from absl import app
-from stable_baselines3 import PPO, A2C
+from stable_baselines3 import PPO
 
 from MoveToBeaconBot.MoveToBeaconAgent import MoveToBeaconAgent
+import os
+
+os.environ['SDL_VIDEO_ALLOW_SCREENSAVER'] = '1'
+
 
 def main(unused_argv):
-
-    date = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    model_name = f"MoveToBeaconAgent: {date}"
-
-    models_dir = f"models/{model_name}/"
-    logdir = f"logs/{model_name}/"
-
-    first_open = True
-
     device = torch.device('cuda')
     torch.set_default_device(device)
     print(device)
 
     policy = 'CnnPolicy'
-
-    learning_rate = 3e-4
-    n_steps = 2048
-    batch_size = 64
-    n_epochs = 10
-    gamma = 0.99
-    ent_coef = 0.01
-
-    env = MoveToBeaconAgent()
-    model = PPO(policy,
-                env, verbose=1, tensorboard_log=logdir,
-                learning_rate=learning_rate, n_steps=n_steps,
-                batch_size=batch_size, n_epochs=n_epochs,
-                gamma=gamma, ent_coef=ent_coef
-                )
-
     TIMESTEPS = 20000
 
-    start_time = time.time()
+    param_variations = [
+        {'learning_rate': 0.0001, 'n_steps': 2048, 'batch_size': 64, 'n_epochs': 10, 'gamma': 0.99, 'ent_coef': 0.0},
 
-    for i in range(1, 50):
-        print("On iteration: ", i)
-        model.learn(total_timesteps=TIMESTEPS, reset_num_timesteps=False, tb_log_name=f"PPO")
-        model.save(f"{models_dir}/{TIMESTEPS * i}")
-        if first_open:
-            # Salvar os parametros do treinamento em um arquivo.txt
-            with open(f"{models_dir}/args.txt", "w") as f:
-                f.write(f"policy: {policy}\n")
-                f.write(f"learning_rate: {learning_rate}\n")
-                f.write(f"n_steps: {n_steps}\n")
-                f.write(f"batch_size: {batch_size}\n")
-                f.write(f"n_epochs: {n_epochs}\n")
-                f.write(f"gamma: {gamma}\n")
-                f.write(f"ent_coef: {ent_coef}\n")
+        {'learning_rate': 0.001, 'n_steps': 2048, 'batch_size': 64, 'n_epochs': 10, 'gamma': 0.99, 'ent_coef': 0.0},
+        {'learning_rate': 0.0001, 'n_steps': 2048, 'batch_size': 64, 'n_epochs': 10, 'gamma': 0.99, 'ent_coef': 0.0},
+        {'learning_rate': 0.00005, 'n_steps': 2048, 'batch_size': 64, 'n_epochs': 10, 'gamma': 0.99, 'ent_coef': 0.0},
 
-            first_open = False
-        env.reset()
+        {'learning_rate': 0.0003, 'n_steps': 1024, 'batch_size': 64, 'n_epochs': 10, 'gamma': 0.99, 'ent_coef': 0.0},
+        {'learning_rate': 0.0003, 'n_steps': 4096, 'batch_size': 64, 'n_epochs': 10, 'gamma': 0.99, 'ent_coef': 0.0},
+        {'learning_rate': 0.0003, 'n_steps': 3072, 'batch_size': 64, 'n_epochs': 10, 'gamma': 0.99, 'ent_coef': 0.0},
 
-    end_time = time.time()
-    duration = end_time - start_time
+        {'learning_rate': 0.0003, 'n_steps': 2048, 'batch_size': 32, 'n_epochs': 10, 'gamma': 0.99, 'ent_coef': 0.0},
+        {'learning_rate': 0.0003, 'n_steps': 2048, 'batch_size': 128, 'n_epochs': 10, 'gamma': 0.99, 'ent_coef': 0.0},
+        {'learning_rate': 0.0003, 'n_steps': 2048, 'batch_size': 256, 'n_epochs': 10, 'gamma': 0.99, 'ent_coef': 0.0},
 
-    with open(f"{models_dir}/training_duration.txt", "w") as f:
-        f.write(f"Training duration: {duration} seconds\n")
+        {'learning_rate': 0.0003, 'n_steps': 2048, 'batch_size': 64, 'n_epochs': 5, 'gamma': 0.99, 'ent_coef': 0.0},
+        {'learning_rate': 0.0003, 'n_steps': 2048, 'batch_size': 64, 'n_epochs': 15, 'gamma': 0.99, 'ent_coef': 0.0},
+        {'learning_rate': 0.0003, 'n_steps': 2048, 'batch_size': 64, 'n_epochs': 20, 'gamma': 0.99, 'ent_coef': 0.0},
 
-    env.close()
+        {'learning_rate': 0.0003, 'n_steps': 2048, 'batch_size': 64, 'n_epochs': 10, 'gamma': 0.95, 'ent_coef': 0.0},
+        {'learning_rate': 0.0003, 'n_steps': 2048, 'batch_size': 64, 'n_epochs': 10, 'gamma': 0.999, 'ent_coef': 0.0},
+        {'learning_rate': 0.0003, 'n_steps': 2048, 'batch_size': 64, 'n_epochs': 10, 'gamma': 0.90, 'ent_coef': 0.0},
+
+        {'learning_rate': 0.0003, 'n_steps': 2048, 'batch_size': 64, 'n_epochs': 10, 'gamma': 0.99, 'ent_coef': 0.05},
+        {'learning_rate': 0.0003, 'n_steps': 2048, 'batch_size': 64, 'n_epochs': 10, 'gamma': 0.99, 'ent_coef': 0.1},
+        {'learning_rate': 0.0003, 'n_steps': 2048, 'batch_size': 64, 'n_epochs': 10, 'gamma': 0.99, 'ent_coef': 0.001}
+    ]
+
+    for i, params in enumerate(param_variations, start=1):
+        date = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        model_name = f"MoveToBeaconAgent: {date}"
+
+        models_dir = f"models/{model_name}/"
+        logdir = f"logs/{model_name}/"
+
+        env = MoveToBeaconAgent()
+        model = PPO(policy, env, verbose=1, tensorboard_log=logdir,
+                    learning_rate=params['learning_rate'],
+                    n_steps=params['n_steps'],
+                    batch_size=params['batch_size'],
+                    n_epochs=params['n_epochs'],
+                    gamma=params['gamma'],
+                    ent_coef=params['ent_coef'],
+                    device='cuda')
+        print(f"Training with parameters {params}")
+        start_time = time.time()
+
+        for episode in range(1, 101):
+            print("On iteration: ", episode)
+            model.learn(total_timesteps=TIMESTEPS, reset_num_timesteps=False, tb_log_name=f"PPO")
+            model.save(f"{models_dir}/{TIMESTEPS * episode}")
+            env.reset()
+
+        end_time = time.time()
+        duration = end_time - start_time
+
+        with open(f"{models_dir}/args.txt", "w") as f:
+            f.write(f"policy: {policy}\n")
+            for param, value in params.items():
+                f.write(f"{param}: {value}\n")
+
+        with open(f"{models_dir}/training_duration.txt", "w") as f:
+            f.write(f"Training duration: {duration} seconds\n")
+
+        env.close()
+
     print("Treinamento Finalizado")
     exit(0)
 

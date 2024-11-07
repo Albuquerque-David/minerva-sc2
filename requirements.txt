@@ -2,5 +2,6 @@ opencv-python~=4.9.0.80
 numpy~=1.26.4
 gymnasium~=0.29.1
 tensorflow~=2.15.0.post1
-torch~=2.1.1+rocm5.6
 PySC2~=4.0.0
+torch~=2.5.0+rocm6.2
+stable_baselines3~=2.3.2

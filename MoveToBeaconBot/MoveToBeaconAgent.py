@@ -30,10 +30,9 @@ class MoveToBeaconAgent(gym.Env):
             game_steps_per_episode=None,
             visualize=False,
             replay_dir='./replays',
-            save_replay_episodes=1
+            save_replay_episodes=0
         )
-        # Define o espaço de ações como MultiDiscrete onde:
-        # - Primeiro e segundo elementos são as coordenadas x e y (cada uma variando de 0 a 83)
+
         self.action_space = spaces.MultiDiscrete([48, 48])
         self.observation_space = spaces.Box(low=0, high=255, shape=(3, 48, 48), dtype=np.uint8)
 
@@ -73,6 +72,11 @@ class MoveToBeaconAgent(gym.Env):
     def _extract_observation(self, timestep):
         screen = np.array(timestep.observation['feature_screen'][self.features], dtype=np.uint8)
         return screen
+
+    def _select_unit_marine(self, timestep):
+        game_units = timestep.observation['feature_units']
+        marines = [unit for unit in game_units if unit.unit_type == units.Terran.Marine]
+        return actions.FUNCTIONS.select_point("select", (marines[0].x, marines[0].y))
 
     def _transform_action(self, action, timestep):
         if timestep is None:

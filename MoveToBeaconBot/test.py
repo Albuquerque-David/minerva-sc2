@@ -4,7 +4,7 @@ import torch
 from absl import app
 from stable_baselines3 import PPO
 
-from MoveToBeaconBot.MoveToBeaconAgent import MoveToBeaconAgent
+from MoveToBeaconBot.MoveToBeaconAgentDiscrete import MoveToBeaconAgentDiscrete
 
 
 def main(unused_argv):
@@ -18,7 +18,7 @@ def main(unused_argv):
     torch.set_default_device(device)
     print(device)
 
-    env = MoveToBeaconAgent()
+    env = MoveToBeaconAgentDiscrete()
 
     model = PPO.load(f"{model_path}", env=env, device=device)
 

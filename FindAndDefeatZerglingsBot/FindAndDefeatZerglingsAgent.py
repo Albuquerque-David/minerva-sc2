@@ -32,8 +32,7 @@ class FindAndDefeatZerglingsAgent(gym.Env):
             replay_dir='./replays',
             save_replay_episodes=1
         )
-        # Define o espaço de ações como MultiDiscrete onde:
-        # - Primeiro e segundo elementos são as coordenadas x e y (cada uma variando de 0 a 83)
+
         self.action_space = spaces.MultiDiscrete([48, 48])
         self.observation_space = spaces.Box(low=0, high=255, shape=(3, 48, 48), dtype=np.uint8)
 
