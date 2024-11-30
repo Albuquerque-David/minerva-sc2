@@ -11,7 +11,7 @@ os.environ['SDL_VIDEO_ALLOW_SCREENSAVER'] = '1'
 
 
 def main(unused_argv):
-    device = torch.device('cuda')
+    device = torch.device('cpu')
     torch.set_default_device(device)
     print(device)
 
@@ -61,7 +61,7 @@ def main(unused_argv):
                     n_epochs=params['n_epochs'],
                     gamma=params['gamma'],
                     ent_coef=params['ent_coef'],
-                    device='cuda')
+                    device='cpu')
         print(f"Training with parameters {params}")
         start_time = time.time()
 
