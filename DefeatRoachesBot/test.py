@@ -9,12 +9,12 @@ from DefeatRoachesBot.DefeatRoachesAgent import DefeatRoachesAgent
 
 def main(unused_argv):
     model_file = 'xxxx.zip'
-    model_name = "MoveToBeaconAgent: 2024-09-07_18-33-48"
+    model_name = "DefeatRoachesAgent: 2024-12-18_09-13-41"
     model_path = f"models/{model_name}/{model_file}"
 
     logdir = f"logs/{model_name}/"
 
-    device = torch.device('cuda')
+    device = torch.device('cpu')
     torch.set_default_device(device)
     print(device)
 
@@ -22,7 +22,7 @@ def main(unused_argv):
 
     model = PPO.load(f"{model_path}", env=env, device=device)
 
-    num_episodes = 1
+    num_episodes = 100
     for episode in range(1, num_episodes + 1):
         obs, info = env.reset()
         done = False
